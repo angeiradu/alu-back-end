@@ -1,34 +1,37 @@
 #!/usr/bin/python3
+"""
+Gathers data from an API and displays the TODO list progress for a given employee ID.
+"""
+
 import requests
+import sys
 
-def get_employee_todo_progress(employee_id):
-    # Make a GET request to the API endpoint
-    response = requests.get(f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}")
+if __name__ == "__main__":
+    if len(sys.argv) != 2 or not sys.argv[1].isdigit():
+        print("Usage: python3 gather_data.py employee_id")
+        sys.exit(1)
 
-    # Check if the request was successful (status code 200)
-    if response.status_code == 200:
-        todos = response.json()
+    employee_id = int(sys.argv[1])
 
-        # Filter the completed tasks
-        completed_tasks = [todo for todo in todos if todo['completed']]
+    # Make a GET request to retrieve employee information
+    url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+    response = requests.get(url)
+    employee = response.json()
 
-        # Extract relevant information
-        employee_name = todos[0]['name']
-        number_of_done_tasks = len(completed_tasks)
-        total_number_of_tasks = len(todos)
+    # Make a GET request to retrieve the employee's TODO list
+    url = f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}"
+    response = requests.get(url)
+    todos = response.json()
 
-        # Print the progress information
-        print(f"Employee {employee_name} is done with tasks({number_of_done_tasks}/{total_number_of_tasks}):")
+    # Filter completed tasks
+    completed_tasks = [todo for todo in todos if todo['completed']]
 
-        # Print the titles of completed tasks
-        for task in completed_tasks:
-            print(f"\t{task['title']}")
+    # Display the progress
+    employee_name = employee['name']
+    total_tasks = len(todos)
+    completed_count = len(completed_tasks)
 
-    else:
-        # Print an error message if the request was not successful
-        print(f"Error: {response.status_code}")
+    print(f"Employee {employee_name} is done with tasks({completed_count}/{total_tasks}):")
 
-
-# Test the function with an employee ID
-employee_id = 1
-get_employee_todo_progress(employee_id)
+    for task in completed_tasks:
+        print(f"\t{task['title']}")
