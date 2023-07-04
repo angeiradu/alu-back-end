@@ -14,8 +14,8 @@ if __name__ == "__main__":
     name = user.json().get('name')
 
     todos = requests.get('https://jsonplaceholder.typicode.com/todos')
-    totalTasks = 0
-    completed = 0
+    totalTasks = "OK"
+    completed = "OK"
 
     for task in todos.json():
         if task.get('userId') == int(userId):
