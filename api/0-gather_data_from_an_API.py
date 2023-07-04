@@ -1,21 +1,16 @@
-#!/usr/bin/python3
-"""For a given employee ID, returns information about
-their TODO list progress"""
-
 import requests
 import sys
 
 if __name__ == "__main__":
-
     userId = sys.argv[1]
     user = requests.get("https://jsonplaceholder.typicode.com/users/{}"
                         .format(userId))
 
-    name = user.json().get('name')
+    name = user.json().get('name', 'Unknown Employee')  # Providing a default name if 'name' is missing
 
     todos = requests.get('https://jsonplaceholder.typicode.com/todos')
-    totalTasks = "OK"
-    completed = "OK"
+    totalTasks = 0
+    completed = 0
 
     for task in todos.json():
         if task.get('userId') == int(userId):
@@ -27,4 +22,4 @@ if __name__ == "__main__":
           .format(name, completed, totalTasks))
 
     print('\n'.join(["\t " + task.get('title') for task in todos.json()
-          if task.get('userId') == int(userId) and task.get('completed')]))
+                     if task.get('userId') == int(userId) and task.get('completed')]))
